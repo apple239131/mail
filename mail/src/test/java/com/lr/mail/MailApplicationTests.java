@@ -10,6 +10,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import java.io.File;
 import java.util.Date;
 
@@ -68,5 +71,32 @@ class MailApplicationTests {
         helper.addInline("p2",new FileSystemResource(new File("C:\\Users\\23913\\Desktop\\p2.jpg")));
         javaMailSender.send(msg);
     }
+
+    @Autowired
+    TemplateEngine templateEngine;
+
+    //邮件使用thymeleaf渲染
+    @Test
+    public void mail3() throws MessagingException {
+        MimeMessage msg=javaMailSender.createMimeMessage();
+        MimeMessageHelper helper=new MimeMessageHelper(msg,true);
+        helper.setSubject("测试邮件（thymeleaf)");
+        Context context=new Context();
+        context.setVariable("username", "apple");
+        context.setVariable("position", "Java工程师");
+        context.setVariable("dep", "产品研发部");
+        context.setVariable("salary", 0);
+        context.setVariable("joblevel", "高级工程师");
+        String process = templateEngine.process("mail.html", context);
+        helper.setText(process, true);
+        helper.setFrom("2391318676@qq.com");
+        helper.setSentDate(new Date());
+        helper.setTo("2860363914@qq.com");
+        javaMailSender.send(msg);
+    }
+
+
+
+
 
 }
